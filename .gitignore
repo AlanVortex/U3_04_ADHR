@@ -1,0 +1,42 @@
+# Archivos y carpetas comunes de IDEs
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Archivos específicos de STS
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Maven
+target/
+.mvn/wrapper/maven-wrapper.jar
+*.log
+
+# Build y bin
+/build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Ayuda y archivos locales no necesarios
+HELP.md
