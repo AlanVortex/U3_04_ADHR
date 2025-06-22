@@ -24,16 +24,17 @@ public class AlmacenServiceImpl implements AlmacenService {
     public Almacen createAlmacen(Almacen almacen) {
         almacen.setFechaRegistro(LocalDate.now());
 
-        // Obtener la cede completa desde la BD
         Cede cede = cedeRepository.findById(almacen.getCede().getId())
                 .orElseThrow(() -> new RuntimeException("Cede no encontrada"));
 
         almacen.setCede(cede);
 
-        String clave = cede.getClave() + "-A" + System.currentTimeMillis();
-        almacen.setClave(clave);
+        Almacen saved = repository.save(almacen); // primero se guarda para tener el id
 
-        return repository.save(almacen);
+        String clave = cede.getClave() + "-A" + saved.getId();
+        saved.setClave(clave);
+
+        return repository.save(saved); // segundo guardado con clave
     }
 
     @Override

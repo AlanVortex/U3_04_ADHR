@@ -19,15 +19,29 @@ public class CedeServiceImpl implements CedeService {
 
     @Override
     public Cede createCede(Cede cede) {
-        String clave = generarClaveCede();
-        cede.setClave(clave);
-        return repository.save(cede);
+        // Primero se guarda sin la clave (clave será null)
+        Cede saved = repository.save(cede);
+
+        // Ahora que ya tiene ID, generamos la clave con el formato C[id]-[ddMMyyyy]-[4 dígitos aleatorios]
+        String fecha = new SimpleDateFormat("ddMMyyyy").format(new Date());
+        int aleatorio = new Random().nextInt(9000) + 1000;
+        String clave = "C" + saved.getId() + "-" + fecha + "-" + aleatorio;
+
+        saved.setClave(clave);
+        return repository.save(saved); // Actualizamos la clave en BD
+    }
+
+    private String generarClaveCede(Long id) {
+        String fecha = new SimpleDateFormat("ddMMyyyy").format(new Date());
+        int aleatorio = new Random().nextInt(9000) + 1000;
+        return "C" + id + "-" + fecha + "-" + aleatorio;
     }
 
     @Override
     public Cede updateCede(Cede cede) {
-        return repository.save(cede); // mantiene clave original
+        return repository.save(cede); // Aquí no se toca la clave
     }
+
 
     private String generarClaveCede() {
         String fecha = new SimpleDateFormat("ddMMyyyy").format(new Date());

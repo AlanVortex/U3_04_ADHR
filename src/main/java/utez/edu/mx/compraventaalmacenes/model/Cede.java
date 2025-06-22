@@ -16,16 +16,17 @@ public class Cede {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String clave; // C[id]-[ddMMyyyy]-[aleatorio]
 
     @Column(nullable = false)
     @NotBlank(message = "El estado no puede estar vacío")
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$", message = "El estado solo puede contener letras y espacios")
+    @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{2,50}$", message = "El estado debe contener solo letras y tener entre 2 y 50 caracteres")
     private String estado;
 
     @Column(nullable = false)
     @NotBlank(message = "El municipio no puede estar vacío")
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$", message = "El municipio solo puede contener letras y espacios")
+    @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{2,50}$", message = "El municipio debe contener solo letras y tener entre 2 y 50 caracteres")
     private String municipio;
+
 }

@@ -23,20 +23,20 @@ public class CedeController {
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody Cede cede, BindingResult result) {
         if (result.hasErrors()) {
-            String errorMsg = result.getFieldErrors().stream()
-                    .map(e -> e.getField() + ": " + e.getDefaultMessage())
-                    .collect(Collectors.joining(" | "));
             return ResponseEntity.badRequest().body(Map.of(
                     "message", "Error de validación",
-                    "details", errorMsg
+                    "errors", result.getFieldErrors().stream().map(error -> Map.of(
+                            "field", error.getField(),
+                            "error", error.getDefaultMessage()
+                    ))
             ));
         }
 
         try {
-            Cede saved = service.createCede(cede);
+            Cede resultCede = service.createCede(cede);
             return ResponseEntity.ok(Map.of(
                     "message", "Cede registrada correctamente",
-                    "data", saved
+                    "data", resultCede
             ));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
@@ -44,6 +44,7 @@ public class CedeController {
             ));
         }
     }
+
 
     @GetMapping
     public List<Cede> getAll() {

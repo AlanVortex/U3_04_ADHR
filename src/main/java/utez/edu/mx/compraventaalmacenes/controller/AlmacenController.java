@@ -1,13 +1,16 @@
 package utez.edu.mx.compraventaalmacenes.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.compraventaalmacenes.model.Almacen;
 import utez.edu.mx.compraventaalmacenes.service.AlmacenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/almacenes")
@@ -18,12 +21,22 @@ public class AlmacenController {
     private AlmacenService service;
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Almacen almacen) {
+    public ResponseEntity<?> create(@Valid @RequestBody Almacen almacen, BindingResult result) {
+        if (result.hasErrors()) {
+            String errorMsg = result.getFieldErrors().stream()
+                    .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                    .collect(Collectors.joining(" | "));
+            return ResponseEntity.badRequest().body(Map.of(
+                    "message", "Error de validación",
+                    "details", errorMsg
+            ));
+        }
+
         try {
-            Almacen result = service.createAlmacen(almacen);
+            Almacen resultSave = service.createAlmacen(almacen);
             return ResponseEntity.ok().body(Map.of(
                     "message", "Almacén registrado correctamente",
-                    "data", result
+                    "data", resultSave
             ));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
@@ -31,7 +44,6 @@ public class AlmacenController {
             ));
         }
     }
-
 
     @GetMapping
     public List<Almacen> getAll() {
@@ -44,12 +56,24 @@ public class AlmacenController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Almacen updated) {
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody Almacen updated, BindingResult result) {
+        if (result.hasErrors()) {
+            String errorMsg = result.getFieldErrors().stream()
+                    .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                    .collect(Collectors.joining(" | "));
+            return ResponseEntity.badRequest().body(Map.of(
+                    "message", "Error de validación",
+                    "details", errorMsg
+            ));
+        }
+
         try {
             Almacen almacen = service.getById(id);
             almacen.setPrecioVenta(updated.getPrecioVenta());
+            almacen.setPrecioRenta(updated.getPrecioRenta());
             almacen.setTamano(updated.getTamano());
             almacen.setCede(updated.getCede());
+
             Almacen saved = service.updateAlmacen(almacen);
             return ResponseEntity.ok(Map.of(
                     "message", "Almacén actualizado correctamente",
@@ -75,7 +99,4 @@ public class AlmacenController {
             ));
         }
     }
-
-
-
 }

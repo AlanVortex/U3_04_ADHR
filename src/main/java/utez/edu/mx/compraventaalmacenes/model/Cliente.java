@@ -1,6 +1,7 @@
 package utez.edu.mx.compraventaalmacenes.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
@@ -14,12 +15,14 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank(message = "El nombre completo es obligatorio")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{3,60}$", message = "Solo letras y espacios permitidos")
     private String nombreCompleto;
 
-    @Column(nullable = false, length = 10)
+    @Pattern(regexp = "^[0-9]{10}$", message = "El teléfono debe tener exactamente 10 dígitos")
     private String telefono;
 
-    @Column(nullable = false, unique = true)
+    @Email(message = "Correo electrónico no válido")
+    @NotBlank(message = "El correo es obligatorio")
     private String correo;
 }
