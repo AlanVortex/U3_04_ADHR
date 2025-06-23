@@ -36,4 +36,7 @@ public class Almacen {
     @ManyToOne(optional = false)
     @JoinColumn(name = "cede_id", nullable = false)
     private Cede cede;
+
+    @Column(nullable = false)
+    private String estadoAlmacen; // DISPONIBLE, RENTADO, VENDIDO
 }
