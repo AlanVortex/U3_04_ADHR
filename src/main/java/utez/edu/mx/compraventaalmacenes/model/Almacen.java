@@ -38,5 +38,13 @@ public class Almacen {
     private Cede cede;
 
     @Column(nullable = false)
-    private String estadoAlmacen; // DISPONIBLE, RENTADO, VENDIDO
+    private String estadoAlmacen;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.estadoAlmacen == null || this.estadoAlmacen.trim().isEmpty()) {
+            this.estadoAlmacen = "DISPONIBLE";
+        }
+    }
 }
+

@@ -2,6 +2,7 @@ package utez.edu.mx.compraventaalmacenes.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.compraventaalmacenes.model.Cede;
 import utez.edu.mx.compraventaalmacenes.service.CedeService;
@@ -15,24 +16,59 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/cedes")
 @CrossOrigin(origins = "*")
+@Validated
 public class CedeController {
 
     @Autowired
     private CedeService service;
 
+//    @PostMapping
+//    public ResponseEntity<?> create(@Valid @RequestBody Cede cede, BindingResult result) {
+//        if (result.hasErrors()) {
+//            return ResponseEntity.badRequest().body(Map.of(
+//                    "message", "Error de validación",
+//                    "errors", result.getFieldErrors().stream().map(error -> Map.of(
+//                            "field", error.getField(),
+//                            "error", error.getDefaultMessage()
+//                    ))
+//            ));
+//        }
+//
+//        try {
+//            Cede resultCede = service.createCede(cede);
+//            return ResponseEntity.ok(Map.of(
+//                    "message", "Cede registrada correctamente",
+//                    "data", resultCede
+//            ));
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(Map.of(
+//                    "message", "Error al registrar cede: " + e.getMessage()
+//            ));
+//        }
+//    }
+
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody Cede cede, BindingResult result) {
-        if (result.hasErrors()) {
+    public ResponseEntity<?> create(@RequestBody Cede cede, BindingResult result) {
+        String regex = "^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{2,50}$";
+
+        // Validación manual de formato
+        if (cede.getEstado() == null || !cede.getEstado().matches(regex)) {
             return ResponseEntity.badRequest().body(Map.of(
-                    "message", "Error de validación",
-                    "errors", result.getFieldErrors().stream().map(error -> Map.of(
-                            "field", error.getField(),
-                            "error", error.getDefaultMessage()
-                    ))
+                    "message", "El estado debe contener solo letras y tener entre 2 y 50 caracteres"
+            ));
+        }
+
+        if (cede.getMunicipio() == null || !cede.getMunicipio().matches(regex)) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "message", "El municipio debe contener solo letras y tener entre 2 y 50 caracteres"
             ));
         }
 
         try {
+            // 🔒 Sanitización contra <script> u otros intentos
+            cede.setEstado(cede.getEstado().replaceAll("[<>]", ""));
+            cede.setMunicipio(cede.getMunicipio().replaceAll("[<>]", ""));
+
             Cede resultCede = service.createCede(cede);
             return ResponseEntity.ok(Map.of(
                     "message", "Cede registrada correctamente",
@@ -44,7 +80,6 @@ public class CedeController {
             ));
         }
     }
-
 
     @GetMapping
     public List<Cede> getAll() {
